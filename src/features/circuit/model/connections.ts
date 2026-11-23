@@ -6,6 +6,7 @@ export function validateConnection(
   document: CircuitDocument,
   from: Endpoint,
   to: Endpoint,
+  allowFeedback = false,
 ): string | null {
   if (document.wires.length >= 480)
     return "最多支持 480 条连线，请先删除不用的连线";
@@ -26,22 +27,24 @@ export function validateConnection(
     )
   )
     return "这个输入端口已有连线，请先选择旧连线并删除";
-  try {
-    topologicalOrder({
-      ...document,
-      wires: [...document.wires, { id: "candidate", from, to }],
-    });
-  } catch {
-    return "该连线会形成反馈环；请连接到下游元件";
-  }
+  if (!allowFeedback)
+    try {
+      topologicalOrder({
+        ...document,
+        wires: [...document.wires, { id: "candidate", from, to }],
+      });
+    } catch {
+      return "该连线会形成反馈环；请连接到下游元件";
+    }
   return null;
 }
 export function connect(
   document: CircuitDocument,
   from: Endpoint,
   to: Endpoint,
+  allowFeedback = false,
 ): string | null {
-  const error = validateConnection(document, from, to);
+  const error = validateConnection(document, from, to, allowFeedback);
   if (!error)
     document.wires.push({
       id: createId("wire"),

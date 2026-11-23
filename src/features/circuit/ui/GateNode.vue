@@ -9,19 +9,28 @@ const props = defineProps<{
   value: Signal;
   selected: boolean;
   pending: boolean;
+  research?: boolean;
+  satisfied?: boolean | null;
+  pinned?: 0 | 1 | null;
+  conflict?: boolean;
+  inLoop?: boolean;
 }>();
 const emit = defineEmits<{
   select: [id: string];
   startDrag: [event: PointerEvent, id: string];
   port: [port: PortRequest];
   toggle: [id: string];
+  pin: [id: string];
 }>();
 const spec = computed(() => getSpec(props.node.kind));
+const isPinned = computed(
+  () => props.pinned !== null && props.pinned !== undefined,
+);
 </script>
 <template>
   <g
     class="gate-node"
-    :class="{ 'is-selected': selected }"
+    :class="{ 'is-selected': selected, 'is-conflict': conflict }"
     :data-node="node.id"
     role="group"
     tabindex="0"
@@ -74,6 +83,54 @@ const spec = computed(() => getSpec(props.node.kind));
       /><text :x="node.x + 88" :y="node.y + 57" class="led-text">{{
         value
       }}</text></g
+    ><template v-if="research && node.kind !== 'INPUT'"
+      ><g v-if="satisfied !== null && satisfied !== undefined"
+        ><circle
+          :cx="node.x + 100"
+          :cy="node.y + 13"
+          r="8"
+          class="sat-badge"
+          :class="satisfied ? 'sat-ok' : 'sat-bad'"
+        /><text
+          :x="node.x + 100"
+          :y="node.y + 17"
+          class="sat-text"
+          :class="satisfied ? 'sat-ok-text' : 'sat-bad-text'"
+          >{{ satisfied ? "✓" : "✗" }}</text
+        ></g
+      ><text
+        v-else-if="inLoop"
+        :x="node.x + 100"
+        :y="node.y + 17"
+        class="loop-mark"
+        >↻</text
+      ><g
+        role="button"
+        tabindex="0"
+        class="pin-anchor"
+        :aria-label="
+          isPinned
+            ? `${node.label} 已钉住为 ${pinned}，点击切换`
+            : `钉住 ${node.label} 以筛选稳定状态`
+        "
+        @pointerdown.stop
+        @click.stop="emit('pin', node.id)"
+        @keydown.enter.prevent="emit('pin', node.id)"
+        @keydown.space.prevent="emit('pin', node.id)"
+        ><circle
+          :cx="node.x + 13"
+          :cy="node.y + 73"
+          r="8"
+          class="pin-dot"
+          :class="{ pinned: isPinned }"
+        /><text
+          :x="node.x + 13"
+          :y="node.y + 76.5"
+          class="pin-text"
+          :class="{ pinned: isPinned }"
+          >{{ isPinned ? pinned : "⌖" }}</text
+        ></g
+      ></template
     ><circle
       v-for="port in spec.inputs"
       :key="`in${port}`"

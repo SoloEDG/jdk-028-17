@@ -13,6 +13,9 @@ const unknowns = computed(
   () =>
     Object.values(props.signals.values).filter((value) => value === "X").length,
 );
+const research = computed(
+  () => (props.document.mode ?? "combinational") === "research",
+);
 </script>
 <template>
   <div class="signal-monitor">
@@ -38,9 +41,13 @@ const unknowns = computed(
     </div>
     <p class="small-note">
       {{
-        unknowns
-          ? "X 表示端口悬空或信号尚未确定。点击元件检查输入。"
-          : "亮橙色线路表示 1，蓝灰色线路表示 0。"
+        research
+          ? unknowns
+            ? "当前没有可展示的完整稳定状态，或部分信号在任何稳定状态下都无法确定。"
+            : "画布正在展示一个完整的稳定状态；切换输入会重新分析。"
+          : unknowns
+            ? "X 表示端口悬空或信号尚未确定。点击元件检查输入。"
+            : "亮橙色线路表示 1，蓝灰色线路表示 0。"
       }}
     </p>
   </div>

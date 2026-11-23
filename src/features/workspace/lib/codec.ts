@@ -17,6 +17,9 @@ export function decodeDocument(text: string): CircuitDocument {
     !Array.isArray(data.wires)
   )
     throw new Error("文件格式或版本不受支持");
+  const mode = data.mode ?? "combinational";
+  if (mode !== "combinational" && mode !== "research")
+    throw new Error("文件格式或版本不受支持");
   if (data.nodes.length > 120 || data.wires.length > 480)
     throw new Error("实验最多支持 120 个元件、480 条连线");
   const ids = new Set<string>();
@@ -94,6 +97,16 @@ export function decodeDocument(text: string): CircuitDocument {
       to: { nodeId: to.id, port: Number(tp) },
     };
   });
+  const pins: Record<string, 0 | 1> = {};
+  if (data.pins !== undefined) {
+    if (!object(data.pins)) throw new Error("钉住条件无效");
+    for (const [id, value] of Object.entries(data.pins)) {
+      const node = nodes.find((n) => n.id === id);
+      if (!node || node.kind === "INPUT" || (value !== 0 && value !== 1))
+        throw new Error("钉住条件引用了无效元件");
+      pins[id] = value;
+    }
+  }
   const document: CircuitDocument = {
     version: 1,
     name: data.name,
@@ -101,7 +114,9 @@ export function decodeDocument(text: string): CircuitDocument {
     nodes,
     wires,
   };
-  topologicalOrder(document);
+  if (mode === "research") document.mode = "research";
+  if (Object.keys(pins).length) document.pins = pins;
+  if (document.mode !== "research") topologicalOrder(document);
   return document;
 }
 export function encodeDocument(document: CircuitDocument): string {

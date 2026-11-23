@@ -41,6 +41,10 @@ export function useWorkspace(
     document.value = next;
     reset();
   }
+  function load(next: CircuitDocument, message: string) {
+    replace(next);
+    notify({ tone: "success", message });
+  }
   function sample() {
     replace(sampleCircuit());
     notify({ tone: "success", message: "已载入异或示例" });
@@ -72,5 +76,5 @@ export function useWorkspace(
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     notify({ tone: "success", message: "实验文件已导出" });
   }
-  return { status, save, sample, clear, importText, exportFile };
+  return { status, save, load, sample, clear, importText, exportFile };
 }

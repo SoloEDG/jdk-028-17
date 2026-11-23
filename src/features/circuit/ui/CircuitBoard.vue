@@ -16,6 +16,12 @@ const props = defineProps<{
   selected: string | null;
   pending: PortRequest | null;
   tool: GateKind | null;
+  research?: boolean;
+  satisfied?: Record<string, boolean>;
+  pins?: Record<string, 0 | 1>;
+  feedbackNodes?: string[];
+  conflictNodes?: string[];
+  conflictWires?: string[];
 }>();
 const emit = defineEmits<{
   place: [point: Point];
@@ -23,6 +29,7 @@ const emit = defineEmits<{
   select: [id: string | null];
   port: [port: PortRequest];
   toggle: [id: string];
+  pin: [id: string];
 }>();
 const svg = ref<SVGSVGElement | null>(null);
 let drag: { id: string; offset: Point } | null = null;
@@ -81,12 +88,17 @@ function background(event: PointerEvent) {
         @pointerdown="background"
       />
       <text x="25" y="29" class="board-caption">
-        COMBINATIONAL CIRCUIT / 组合逻辑接线台
+        {{
+          research
+            ? "FEEDBACK RESEARCH / 反馈研究接线台"
+            : "COMBINATIONAL CIRCUIT / 组合逻辑接线台"
+        }}
       </text>
       <WireLayer
         :document="document"
         :signals="signals"
         :selected="selected"
+        :conflicts="conflictWires"
         @select="emit('select', $event)"
       />
       <GateNodeView
@@ -96,10 +108,16 @@ function background(event: PointerEvent) {
         :value="signals.values[node.id] ?? 'X'"
         :selected="selected === node.id"
         :pending="pending?.nodeId === node.id"
+        :research="research"
+        :satisfied="satisfied?.[node.id] ?? null"
+        :pinned="pins?.[node.id] ?? null"
+        :conflict="conflictNodes?.includes(node.id) ?? false"
+        :in-loop="feedbackNodes?.includes(node.id) ?? false"
         @start-drag="startDrag"
         @port="emit('port', $event)"
         @toggle="emit('toggle', $event)"
         @select="emit('select', $event)"
+        @pin="emit('pin', $event)"
       />
       <text
         v-if="!document.nodes.length"

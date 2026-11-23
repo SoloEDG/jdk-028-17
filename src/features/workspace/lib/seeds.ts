@@ -51,6 +51,54 @@ export function sampleCircuit(): CircuitDocument {
     ],
   };
 }
+export function latchCircuit(): CircuitDocument {
+  return {
+    version: 1,
+    name: "SR 锁存器研究",
+    targetId: "xor",
+    mode: "research",
+    nodes: [
+      { id: "s", kind: "INPUT", label: "S", value: 1, x: 60, y: 120 },
+      { id: "r", kind: "INPUT", label: "R", value: 0, x: 60, y: 340 },
+      { id: "n1", kind: "NOR", label: "NOR 1", value: 0, x: 360, y: 100 },
+      { id: "n2", kind: "NOR", label: "NOR 2", value: 0, x: 360, y: 320 },
+      { id: "q", kind: "OUTPUT", label: "Q", value: 0, x: 680, y: 100 },
+      { id: "qb", kind: "OUTPUT", label: "Q̄", value: 0, x: 680, y: 320 },
+    ],
+    wires: [
+      {
+        id: "w1",
+        from: { nodeId: "r", port: 0 },
+        to: { nodeId: "n1", port: 0 },
+      },
+      {
+        id: "w2",
+        from: { nodeId: "n2", port: 0 },
+        to: { nodeId: "n1", port: 1 },
+      },
+      {
+        id: "w3",
+        from: { nodeId: "s", port: 0 },
+        to: { nodeId: "n2", port: 0 },
+      },
+      {
+        id: "w4",
+        from: { nodeId: "n1", port: 0 },
+        to: { nodeId: "n2", port: 1 },
+      },
+      {
+        id: "w5",
+        from: { nodeId: "n1", port: 0 },
+        to: { nodeId: "q", port: 0 },
+      },
+      {
+        id: "w6",
+        from: { nodeId: "n2", port: 0 },
+        to: { nodeId: "qb", port: 0 },
+      },
+    ],
+  };
+}
 export function emptyCircuit(): CircuitDocument {
   return {
     version: 1,

@@ -23,7 +23,9 @@ export function useCircuit(
       notify({ tone: "error", message: "请先点击元件右侧的输出端口" });
       return;
     }
-    const error = connect(document.value, pending.value, port);
+    const allowFeedback =
+      (document.value.mode ?? "combinational") === "research";
+    const error = connect(document.value, pending.value, port, allowFeedback);
     if (error) notify({ tone: "error", message: error });
     else {
       pending.value = null;
@@ -32,9 +34,14 @@ export function useCircuit(
   }
   function deleteSelected() {
     if (!selected.value) return;
-    if (document.value.nodes.some((node) => node.id === selected.value))
+    if (document.value.nodes.some((node) => node.id === selected.value)) {
       removeNode(document.value, selected.value);
-    else
+      if (document.value.pins && selected.value in document.value.pins) {
+        delete document.value.pins[selected.value];
+        if (!Object.keys(document.value.pins).length)
+          delete document.value.pins;
+      }
+    } else
       document.value.wires = document.value.wires.filter(
         (wire) => wire.id !== selected.value,
       );

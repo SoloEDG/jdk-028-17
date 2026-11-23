@@ -954,6 +954,256 @@ small {
     margin-left: 4px;
   }
 }
+.mode-toggle {
+  display: inline-flex;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+.mode-toggle button {
+  margin-left: 0;
+  border-radius: 0;
+  font-size: 11px;
+  padding: 6px 10px;
+  background: #f4f8fa;
+  color: #5f7a8a;
+}
+.mode-toggle button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.mode-toggle button:last-child {
+  border-radius: 0 6px 6px 0;
+  border-left: 0;
+}
+.mode-toggle button.active {
+  background: #183f52;
+  border-color: #183f52;
+  color: #fff;
+}
+.sim-error {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 22px;
+  background: #fdeceb;
+  border-bottom: 1px solid #f2c4bd;
+  color: #a93226;
+  font-size: 11px;
+}
+.sim-error button {
+  font-size: 10px;
+  padding: 4px 9px;
+}
+.research-panel {
+  display: grid;
+  gap: 9px;
+  padding: 14px 22px;
+  background: #fdf9f3;
+  border-top: 1px solid #ecdcc6;
+  font-size: 11px;
+}
+.research-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.research-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+.research-title small {
+  font:
+    9px Menlo,
+    monospace;
+  color: #a08d76;
+  letter-spacing: 0.5px;
+  margin-left: 6px;
+}
+.stability-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 13px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.stability-badge.unique {
+  background: #e0f1ee;
+  color: #147b87;
+}
+.stability-badge.dep {
+  background: #fff1d2;
+  color: #8f6a1f;
+}
+.stability-badge.multi {
+  background: #e9e4f7;
+  color: #5b4a9e;
+}
+.stability-badge.none,
+.stability-badge.error {
+  background: #fde3dc;
+  color: #b83a22;
+}
+.research-detail {
+  margin: 0;
+  color: #7d715f;
+  line-height: 1.7;
+}
+.research-meta {
+  margin: 0;
+  color: #9a8c78;
+  font-size: 10px;
+  line-height: 1.7;
+}
+.state-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.state-nav button {
+  padding: 3px 9px;
+  font-size: 10px;
+}
+.state-values {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.state-chip {
+  font:
+    11px Menlo,
+    monospace;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #eef3f5;
+  border: 1px solid #d4dfe5;
+  color: #41606f;
+}
+.state-chip.chip-1 {
+  background: #ffe8d6;
+  border-color: #eab98c;
+  color: #b94d0c;
+}
+.state-chip.chip-X {
+  background: #eee2f3;
+  border-color: #c9aed6;
+  color: #7d4f96;
+}
+.pin-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pin-label {
+  font-weight: 600;
+}
+.pin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #dfc9ae;
+  border-radius: 4px;
+  padding: 3px 5px 3px 9px;
+  font:
+    11px Menlo,
+    monospace;
+  color: #7a5b28;
+}
+.pin-chip button {
+  border: 0;
+  background: transparent;
+  padding: 0 3px;
+  font-size: 10px;
+  color: #b08a4f;
+}
+.pin-hint {
+  color: #8b9aa6;
+  font-size: 10px;
+}
+.research-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.research-foot button {
+  font-size: 11px;
+  padding: 6px 10px;
+}
+.research-note {
+  font-size: 10px;
+  color: #93a3ad;
+}
+.conflict-note {
+  color: #b83a22;
+}
+.sat-badge.sat-ok {
+  fill: #dff0ec;
+  stroke: #147b87;
+  stroke-width: 1.4;
+}
+.sat-badge.sat-bad {
+  fill: #fde3dc;
+  stroke: #b83a22;
+  stroke-width: 1.4;
+}
+.sat-text {
+  font:
+    600 10px Menlo,
+    monospace;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.sat-text.sat-ok-text {
+  fill: #147b87;
+}
+.sat-text.sat-bad-text {
+  fill: #b83a22;
+}
+.loop-mark {
+  fill: #956bac;
+  font:
+    12px Menlo,
+    monospace;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.pin-dot {
+  fill: #f4f8fa;
+  stroke: #9eb1bd;
+  stroke-width: 1.2;
+  cursor: pointer;
+}
+.pin-dot.pinned {
+  fill: #fff1d2;
+  stroke: #c8932a;
+}
+.pin-anchor:hover .pin-dot {
+  stroke: #df671c;
+}
+.pin-text {
+  font:
+    600 9px Menlo,
+    monospace;
+  fill: #7b929e;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.pin-text.pinned {
+  fill: #9a6d14;
+}
+.is-conflict .node-body {
+  stroke: #c4302b;
+  stroke-width: 2.5;
+}
+.wire.wire-conflict {
+  stroke: #c4302b;
+  stroke-width: 3.5;
+  stroke-dasharray: 6 4;
+  animation: none;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *:before,

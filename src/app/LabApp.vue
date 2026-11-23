@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted } from "vue";
 import { CatalogPanel } from "@/features/catalog";
 import { CircuitBoard } from "@/features/circuit";
-import { InputRack, SignalMonitor } from "@/features/simulation";
+import { InputRack, ResearchPanel, SignalMonitor } from "@/features/simulation";
 import { ChallengePanel } from "@/features/challenge";
 import { WorkspaceBar } from "@/features/workspace";
 import { useLab } from "./useLab";
@@ -10,7 +10,8 @@ const lab = useLab();
 const { document, notice } = lab;
 const { tool } = lab.placement,
   { selected, pending } = lab.circuit,
-  { signals } = lab.simulation;
+  { signals, analysis, currentState, stateIndex, simulationError, mode } =
+    lab.simulation;
 const { target, table, passed, inspected, hint } = lab.challenge;
 const { status } = lab.workspace;
 const selectedNode = computed(() =>
@@ -38,7 +39,10 @@ onUnmounted(() => window.removeEventListener("keydown", keydown));
         </div>
       </div>
       <div class="instrument-label">
-        <span class="power-light" />组合逻辑模式 <small>BENCH / JDK–028</small>
+        <span class="power-light" />{{
+          mode === "research" ? "反馈研究模式" : "组合逻辑模式"
+        }}
+        <small>BENCH / JDK–028</small>
       </div>
     </header>
     <WorkspaceBar
@@ -62,9 +66,28 @@ onUnmounted(() => window.removeEventListener("keydown", keydown));
       />
       <section class="center-workspace">
         <div class="board-toolbar">
-          <span><b>工作台</b><small>单比特 · 即时传播</small></span>
+          <span
+            ><b>工作台</b
+            ><small>{{
+              mode === "research" ? "反馈环 · 稳定状态分析" : "单比特 · 即时传播"
+            }}</small></span
+          >
           <div>
-            <button
+            <span class="mode-toggle" role="group" aria-label="仿真模式"
+              ><button
+                :class="{ active: mode === 'combinational' }"
+                :aria-pressed="mode === 'combinational'"
+                @click="lab.setMode('combinational')"
+              >
+                组合模式</button
+              ><button
+                :class="{ active: mode === 'research' }"
+                :aria-pressed="mode === 'research'"
+                @click="lab.setMode('research')"
+              >
+                反馈研究</button
+              ></span
+            ><button
               :disabled="!selected"
               aria-label="删除所选"
               @click="lab.circuit.deleteSelected"
@@ -74,6 +97,12 @@ onUnmounted(() => window.removeEventListener("keydown", keydown));
               取消 / Esc
             </button>
           </div>
+        </div>
+        <div v-if="simulationError" class="sim-error" role="alert">
+          <span>⚠ {{ simulationError }}</span
+          ><button v-if="mode === 'combinational'" @click="lab.setMode('research')">
+            切换到反馈研究模式
+          </button>
         </div>
         <div class="mode-strip" v-if="tool || pending">
           {{ tool ? `点击网格放置 ${tool}` : "已选择输出，请点击目标输入端口"
@@ -85,11 +114,18 @@ onUnmounted(() => window.removeEventListener("keydown", keydown));
           :selected="selected"
           :pending="pending"
           :tool="tool"
+          :research="mode === 'research'"
+          :satisfied="currentState?.satisfied"
+          :pins="document.pins"
+          :feedback-nodes="analysis?.feedbackNodes"
+          :conflict-nodes="analysis?.conflictNodes"
+          :conflict-wires="analysis?.conflictWires"
           @place="lab.place"
           @move="lab.move"
           @select="selected = $event"
           @port="lab.circuit.pickPort"
           @toggle="lab.simulation.toggle"
+          @pin="lab.togglePin"
         />
         <div class="selection-strip">
           <template v-if="selectedNode"
@@ -113,6 +149,16 @@ onUnmounted(() => window.removeEventListener("keydown", keydown));
           }}</span
           ><span class="grid-label">GRID 20</span>
         </div>
+        <ResearchPanel
+          v-if="mode === 'research' && analysis"
+          :document="document"
+          :analysis="analysis"
+          :state-index="stateIndex"
+          @select-state="lab.simulation.showState"
+          @unpin="lab.unpin"
+          @clear-pins="lab.clearPins"
+          @sample="lab.loadLatchSample"
+        />
         <div class="instruments">
           <InputRack
             :nodes="document.nodes"

@@ -1,6 +1,7 @@
 export type Signal = 0 | 1 | "X";
 export type GateKind =
   "INPUT" | "OUTPUT" | "AND" | "OR" | "XOR" | "NOT" | "NAND" | "NOR";
+export type LabMode = "combinational" | "research";
 export interface Point {
   x: number;
   y: number;
@@ -26,6 +27,8 @@ export interface CircuitDocument {
   nodes: GateNode[];
   wires: Wire[];
   targetId: string;
+  mode?: LabMode;
+  pins?: Record<string, 0 | 1>;
 }
 export interface GateSpec {
   kind: GateKind;
